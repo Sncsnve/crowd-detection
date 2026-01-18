@@ -1,6 +1,4 @@
-"""
-Модуль для обработки видео: чтение, обработка кадров, сохранение.
-"""
+#Модуль для обработки видео: чтение, обработка кадров, сохранение.
 
 import cv2
 import time
@@ -8,35 +6,14 @@ from tqdm import tqdm
 
 
 class VideoProcessor:
-    """
-    Класс для обработки видеофайлов.
-    
-    Attributes:
-        detector: Экземпляр детектора людей
-    """
     
     def __init__(self, detector):
-        """
-        Инициализация процессора видео.
-        
-        Args:
-            detector: Экземпляр класса PeopleDetector
-        """
+
         self.detector = detector
         
     
     def process_video(self, input_path, output_path, confidence_threshold=0.5):
-        """
-        Обработка видеофайла: детекция людей на каждом кадре.
-        
-        Args:
-            input_path (str): Путь к входному видео
-            output_path (str): Путь для сохранения результата
-            confidence_threshold (float): Порог уверенности для детекции
-            
-        Returns:
-            dict: Статистика обработки
-        """
+
         # Открытие видеофайла
         cap = cv2.VideoCapture(input_path)
         
