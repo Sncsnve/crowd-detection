@@ -1,5 +1,8 @@
-#Точка входа для детекции людей на видео.
-
+"""
+Точка входа для детекции людей на видео.
+Программа загружает видео, детектирует людей, отрисовывает bounding boxes
+и сохраняет результат.
+"""
 
 import argparse
 import sys
@@ -17,14 +20,14 @@ def parse_args():
                        help='Путь для сохранения результата')
     parser.add_argument('--confidence', type=float, default=0.5,
                        help='Порог уверенности для детекции (0-1)')
-    parser.add_argument('--model', type=str, default='yolov5s',
-                       choices=['yolov5s', 'yolov5m', 'yolov5l'],
-                       help='Модель YOLOv5 для использования')
+    parser.add_argument('--model', type=str, default='yolo11s',
+                       choices=['yolo11n', 'yolo11s', 'yolo11m', 'yolo11l', 'yolo11x'],
+                       help='Модель YOLOv11 для использования')
     return parser.parse_args()
 
 
 def main():
-    
+    """Основная функция программы."""
     args = parse_args()
     
     # Проверка существования входного файла
@@ -47,7 +50,7 @@ def main():
     
     try:
         # Инициализация детектора
-        print("Загрузка модели YOLOv5...")
+        print("Загрузка модели YOLOv11...")
         detector = PeopleDetector(model_name=args.model)
         
         # Обработка видео

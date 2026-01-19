@@ -1,13 +1,25 @@
-#Модуль для детекции людей с использованием YOLOv5
+"""
+Модуль для детекции людей с использованием YOLOv11 от Ultralytics.
+"""
 
-import torch
-import numpy as np
 import cv2
+import torch
+from ultralytics import YOLO
+
 
 class PeopleDetector:
-
-    def __init__(self, model_name='yolov5s', device=None):
-
+    """
+    Класс для детекции людей на изображениях с использованием YOLOv11.
+    """
+    
+    def __init__(self, model_name='yolo11s', device=None):
+        """
+        Инициализация детектора.
+        
+        Args:
+            model_name (str): Название модели YOLOv11
+            device (str): Устройство для вычислений ('cpu', 'cuda', или None для авто)
+        """
         self.model_name = model_name
         
         # Определение устройства
@@ -20,16 +32,20 @@ class PeopleDetector:
         
         # Загрузка модели
         self.model = self._load_model()
-              
-    def _load_model(self):
+        
     
+    def _load_model(self):
+        """Загрузка предобученной модели YOLOv11."""
         try:
-            model = torch.hub.load('ultralytics/yolov5', 
-                                  self.model_name, 
-                                  pretrained=True,
-                                  verbose=False)
-            model.to(self.device)
-            model.eval()
+            # YOLOv11 доступен в ultralytics с версии 8.0.196
+            model = YOLO(f'{self.model_name}.pt')
+            
+            # Перемещение модели на выбранное устройство
+            if self.device == 'cuda':
+                model = model.cuda()
+            else:
+                model = model.cpu()
+                
             print(f"Модель {self.model_name} успешно загружена")
             return model
         except Exception as e:
@@ -37,27 +53,47 @@ class PeopleDetector:
     
     
     def detect(self, image, confidence_threshold=0.5):
-    
-        # Конвертация BGR to RGB
-        image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        """
+        Детектирование людей на изображении.
         
-        # Детекция
+        Args:
+            image (numpy.ndarray): Входное изображение в формате BGR
+            confidence_threshold (float): Порог уверенности для детекции
+            
+        Returns:
+            list: Список детекций, каждая в формате [x1, y1, x2, y2, confidence]
+        """
+        # YOLOv11 автоматически конвертирует BGR to RGB
         with torch.no_grad():
-            results = self.model(image_rgb)
+            results = self.model(image, conf=confidence_threshold, verbose=False)[0]
         
         # Извлечение результатов для класса 'person' (класс 0 в COCO)
-        detections = results.xyxy[0].cpu().numpy()
         people_detections = []
         
-        for det in detections:
-            x1, y1, x2, y2, conf, cls = det
-            if int(cls) == 0 and conf >= confidence_threshold:  # 0 = person
-                people_detections.append([int(x1), int(y1), int(x2), int(y2), float(conf)])
+        if results.boxes is not None:
+            boxes = results.boxes.xyxy.cpu().numpy()
+            confidences = results.boxes.conf.cpu().numpy()
+            classes = results.boxes.cls.cpu().numpy()
+            
+            for box, conf, cls in zip(boxes, confidences, classes):
+                if int(cls) == 0:  # 0 = person
+                    x1, y1, x2, y2 = map(int, box)
+                    people_detections.append([x1, y1, x2, y2, float(conf)])
                 
         return people_detections
-        
-    def draw_detections(self, image, detections):
     
+    
+    def draw_detections(self, image, detections):
+        """
+        Отрисовка bounding boxes на изображении.
+        
+        Args:
+            image (numpy.ndarray): Исходное изображение
+            detections (list): Список детекций
+            
+        Returns:
+            numpy.ndarray: Изображение с отрисованными детекциями
+        """
         result = image.copy()
         
         for det in detections:
