@@ -1,6 +1,6 @@
 torch>=2.0.0
 torchvision>=0.15.0
 opencv-python>=4.8.0
-ultralytics>=8.0.196  # Версия с поддержкой YOLOv11
+ultralytics>=8.0.196 
 tqdm>=4.66.0
 numpy>=1.24.0
