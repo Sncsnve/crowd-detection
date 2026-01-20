@@ -1,4 +1,5 @@
 """Модуль для детекции"""
+
 import cv2
 import torch
 from ultralytics import YOLO
