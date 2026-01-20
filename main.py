@@ -22,7 +22,7 @@ def parse_args():
 
 
 def main():
-    """Основная функция программы"""
+    """Основная функция"""
     args = parse_args()
     if not Path(args.input).exists():
         print(f"Ошибка: файл {args.input} не найден")
