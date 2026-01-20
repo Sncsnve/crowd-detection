@@ -1,8 +1,4 @@
-"""
-Точка входа для детекции людей на видео.
-Программа загружает видео, детектирует людей, отрисовывает bounding boxes
-и сохраняет результат.
-"""
+"""Точка входа для детекции людей"""
 
 import argparse
 import sys
@@ -10,33 +6,28 @@ from pathlib import Path
 from video_processor import VideoProcessor
 from detector import PeopleDetector
 
-
 def parse_args():
-    """Парсинг аргументов командной строки."""
-    parser = argparse.ArgumentParser(description='Детекция людей на видео')
+    """Парсинг аргументов командной строки"""
+    parser = argparse.ArgumentParser(description='Детекция людей')
     parser.add_argument('--input', type=str, default='crowd.mp4',
                        help='Путь к входному видеофайлу')
     parser.add_argument('--output', type=str, default='output/crowd_output.mp4',
-                       help='Путь для сохранения результата')
+                       help='Путь сохранения результата')
     parser.add_argument('--confidence', type=float, default=0.5,
-                       help='Порог уверенности для детекции (0-1)')
+                       help='Порог уверенности детекции (0-1)')
     parser.add_argument('--model', type=str, default='yolo11s',
                        choices=['yolo11n', 'yolo11s', 'yolo11m', 'yolo11l', 'yolo11x'],
-                       help='Модель YOLOv11 для использования')
+                       help='Модель YOLOv11')
     return parser.parse_args()
 
 
 def main():
-    """Основная функция программы."""
+    """Основная функция программы"""
     args = parse_args()
-    
-    # Проверка существования входного файла
     if not Path(args.input).exists():
-        print(f"Ошибка: файл {args.input} не найден.")
-        print("Убедитесь, что crowd.mp4 находится в текущей директории.")
+        print(f"Ошибка: файл {args.input} не найден")
+        print("Убедитесь, что crowd.mp4 находится в текущей директории")
         sys.exit(1)
-    
-    # Создание папки для результата
     Path(args.output).parent.mkdir(parents=True, exist_ok=True)
     
     print("=" * 60)
@@ -49,21 +40,17 @@ def main():
     print("-" * 60)
     
     try:
-        # Инициализация детектора
-        print("Загрузка модели YOLOv11...")
+        print("Загрузка YOLOv11...")
         detector = PeopleDetector(model_name=args.model)
-        
-        # Обработка видео
         processor = VideoProcessor(detector)
         
-        print("Обработка видео начата...")
+        print("Обработка видео...")
         stats = processor.process_video(
             input_path=args.input,
             output_path=args.output,
             confidence_threshold=args.confidence
         )
-        
-        # Вывод статистики
+
         print("\n" + "=" * 60)
         print("СТАТИСТИКА ОБРАБОТКИ")
         print("=" * 60)
@@ -78,7 +65,6 @@ def main():
     except Exception as e:
         print(f"\nОшибка при выполнении: {e}")
         sys.exit(1)
-
 
 if __name__ == "__main__":
     main()

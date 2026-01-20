@@ -4,33 +4,21 @@ __pycache__/
 *.pyo
 *.pyd
 .Python
-
-# Видео файлы
 *.mp4
 *.avi
 *.mov
 *.mkv
-
-# Модели и выходные данные
 *.pt
 *.pth
 *.weights
 output/
-
-# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-
-# OS
 .DS_Store
 Thumbs.db
-
-# Большие файлы проекта
 crowd.mp4
 yolov5s.pt
-
-# Временные файлы
 *.tmp
 *.temp" > .gitignore
